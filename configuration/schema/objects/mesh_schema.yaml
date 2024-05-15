@@ -1,0 +1,33 @@
+# TODO: do we need position
+# do we need a bitmask here?
+name:
+    type: string
+    required: true
+type:
+    type: string
+    required: true
+origname:
+    type: string
+filename:
+    type: string
+extend:
+    type: object
+    required: true
+    properties:
+      x:
+        type: number
+        minimum: 0.01
+      y:
+        type: number
+        minimum: 0.01
+      z:
+        type: number
+        minimum: 0.01
+movable:
+  type: boolean
+position:
+    type: object
+    properties:
+      z:
+        type: number
+        minimum: 0.01

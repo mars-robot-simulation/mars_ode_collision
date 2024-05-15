@@ -1,0 +1,19 @@
+
+name:
+    type: string
+    required: true
+type:
+    type: string
+    required: true
+extend:
+    type: object
+    required: true
+    properties:
+      x:
+        type: number
+      y:
+        type: number
+bitmask:
+    type: number
+    required: true
+

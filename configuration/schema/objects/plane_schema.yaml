@@ -1,0 +1,17 @@
+# TODO: do we need position
+# do we need a bitmask here?
+name:
+    type: string
+type:
+    type: string
+origname:
+    type: string
+filename:
+    type: string
+position:
+    type: object
+    properties:
+      z:
+        type: number
+
+

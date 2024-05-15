@@ -1,0 +1,26 @@
+
+name:
+    type: string
+type:
+    type: string
+size:
+    type: object
+    properties:
+      x:
+        type: number
+      y:
+        type: number
+      z:
+        type: number
+extend:
+    type: object
+    properties:
+      x:
+        type: number
+      y:
+        type: number
+      z:
+        type: number
+bitmask:
+    type: number
+

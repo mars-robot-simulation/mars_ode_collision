@@ -1,0 +1,22 @@
+# ODEBox.cpp:40 checks if xyz<=0, then does the minimum start from 1 or 0.01... ?
+# what is the minimum values xyz can have ?
+name:
+    type: string
+    required: true
+type:
+    type: string
+    required: true
+radius:
+    type: number
+    required: true
+extend:
+    type: object
+    required: true
+    properties:
+      x:
+        type: number
+bitmask:
+    type: number
+    required: true
+
+
