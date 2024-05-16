@@ -39,10 +39,10 @@ namespace mars
          *        should correct be spezified?
          *      - world, space, contactgroup and world_init to false (0)
          */
-        // todo: we only need a physics not the control center?
-        CollisionSpace::CollisionSpace(interfaces::ControlCenter *control) : control(control)
+        // TODO: we only need a physics not the control center?
+        CollisionSpace::CollisionSpace(interfaces::ControlCenter *control) : 
+            interfaces::CollisionInterface(), control{control}
         {
-
             ground_friction = 20;
             ground_cfm = 0.00000001;
             ground_erp = 0.1;
@@ -51,7 +51,6 @@ namespace mars
             num_contacts = 0;
             create_contacts = 1;
             log_contacts = 0;
-            MutexLocker locker(&iMutex);
             registerSchemaValidators();
         }
 
@@ -139,6 +138,8 @@ namespace mars
          */
         void CollisionSpace::registerSchemaValidators()
         {
+            const MutexLocker locker{&iMutex};
+
             // Register schema validators for objects of this collision space
             for(const auto &[obj_name, _] : ObjectFactory::Instance().getAvailableObjects())
             {
@@ -165,7 +166,7 @@ namespace mars
          */
         void CollisionSpace::generateContacts()
         {
-            MutexLocker locker(&iMutex);
+            const MutexLocker locker{&iMutex};
             // std::vector<dJointFeedback*>::iterator iter;
 
             // if world_init = false or step_size <= 0 debug something
@@ -215,15 +216,15 @@ namespace mars
             // dBodyID b1=dGeomGetBody(o1);
             // dBodyID b2=dGeomGetBody(o2);
 
-            Object *object1 = (Object *)dGeomGetData(o1);
-            Object *object2 = (Object *)dGeomGetData(o2);
+            const auto* const object1 = reinterpret_cast<Object*>(dGeomGetData(o1));
+            const auto* const object2 = reinterpret_cast<Object*>(dGeomGetData(o2));
             if(!(object1->c_params.coll_bitmask & object2->c_params.coll_bitmask))
             {
                 return;
             }
 
-            std::shared_ptr<DynamicObject> d1 = object1->getMovable();
-            std::shared_ptr<DynamicObject> d2 = object2->getMovable();
+            auto d1 = object1->getMovable();
+            auto d2 = object2->getMovable();
             // fprintf(stderr, "check collision of: %s / %s\n", object1->getName().c_str(), object2->getName().c_str());
             if(d1 == d2)
             {
@@ -234,13 +235,13 @@ namespace mars
             {
                 return;
             }
-            // todo: add method to check if these objects can collide
+            // TODO: add method to check if these objects can collide
             // for example have a std::map as blacklist for collisions in the objects
             // Objects cannot collide if they are connected, or if they are in same group id's or
             // for what ever reason
 
             int maxNumContacts = 0;
-            // todo: how to handle contact parameters
+            // TODO: how to handle contact parameters
             if(object1->c_params.max_num_contacts <
                 object2->c_params.max_num_contacts)
             {
@@ -252,8 +253,10 @@ namespace mars
             // fprintf(stderr, "\tmax_num_contacts: %d\n", maxNumContacts);
             //  todo: for testing we override the max num contacts with one
             // maxNumContacts = 1;
-            dContact *contact = new dContact[maxNumContacts];
+            // TODO: Replaceable with vector?
+            auto* const contact = new dContact[maxNumContacts];
 
+            // TODO: Replaceable with std::max?
             double filter_depth = -1.0;
             if(object1->filter_depth > filter_depth)
             {
@@ -263,6 +266,7 @@ namespace mars
             {
                 filter_depth = object2->filter_depth;
             }
+            // TODO: Replaceable with std::max?
             double filter_angle = 0.5;
             if(object1->filter_angle > 0.0)
             {
@@ -273,6 +277,7 @@ namespace mars
                 filter_angle = object2->filter_angle;
             }
 
+            // TODO: Replaceable with std::max and conditional for sphere?
             double filter_radius = -1.0;
             Vector filter_sphere(0.0, 0.0, 0.0);
 
@@ -309,7 +314,9 @@ namespace mars
                                      2;
 
             if(contact[0].surface.mu != contact[0].surface.mu2)
+            {
                 contact[0].surface.mode |= dContactMu2;
+            }
 
             if(object1->c_params.rolling_friction > EPSILON ||
                 object2->c_params.rolling_friction > EPSILON)
@@ -435,7 +442,7 @@ namespace mars
             {
                 Vector contact_point;
 
-                // todo: add depth handling here too
+                // TODO: add depth handling here too
                 bool have_contact = false;
                 for(i=0; i<numc; i++)
                 {
@@ -533,13 +540,13 @@ namespace mars
                         //      fprintf(stderr, "\t2: %s", object2->getMovable()->getName().c_str());
                         //  }
                         //  fprintf(stderr, "\n");
-                        //  todo: instead of creating the contact here we have to store it
+                        //  TODO: instead of creating the contact here we have to store it
                         //        in our own contact structure
                         // dJointID c=dJointCreateContact(world,contactgroup,contact+i);
                         // dJointAttach(c,b1,b2);
 
-                        // todo: replace num_ground_collisions with getNumContact in Object
-                        // todo: we should have the information of contact points already in the contact object
+                        // TODO: replace num_ground_collisions with getNumContact in Object
+                        // TODO: we should have the information of contact points already in the contact object
                         // contact_point.x() = contact[i].geom.pos[0];
                         // contact_point.y() = contact[i].geom.pos[1];
                         // contact_point.z() = contact[i].geom.pos[2];
@@ -566,7 +573,7 @@ namespace mars
          */
         void CollisionSpace::callbackForward(void *data, dGeomID o1, dGeomID o2)
         {
-            CollisionSpace *cs = (CollisionSpace *)data;
+            auto* const cs = reinterpret_cast<CollisionSpace *>(data);
             cs->nearCallback(o1, o2);
         }
 
@@ -592,13 +599,17 @@ namespace mars
                 otherGeom = dSpaceGetGeom(space, i);
 
                 if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
+                {
                     continue;
+                }
 
                 b1 = dGeomGetBody(theGeom);
                 b2 = dGeomGetBody(otherGeom);
 
                 if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact))
+                {
                     continue;
+                }
 
                 numc = dCollide(theGeom, otherGeom, 1,
                                 &(contact[0].geom), sizeof(dContact));
@@ -607,7 +618,9 @@ namespace mars
                 if(numc)
                 {
                     if (contact[0].geom.depth > depth)
+                    {
                         depth = contact[0].geom.depth;
+                    }
                 }
             }
 
@@ -625,30 +638,34 @@ namespace mars
         double CollisionSpace::getVectorCollision(const Vector &pos,
                                                   const Vector &ray) const
         {
-            MutexLocker locker(&iMutex);
+            const MutexLocker locker{&iMutex};
             dGeomID otherGeom;
             dContact contact[1];
             // double depth = ray.length();
-            double depth = ray.norm();
+            auto depth = ray.norm();
             int numc;
 
-            dGeomID theGeom = dCreateRay(space, depth);
+            dGeomID theGeom = dCreateRay(space, static_cast<sReal>(depth));
             dGeomRaySetClosestHit(theGeom, 1);
             dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z());
 
-            // todo: first check if there is a collision with the bounding box of the space
+            // TODO: first check if there is a collision with the bounding box of the space
             for(int i=0; i<dSpaceGetNumGeoms(space); i++)
             {
                 otherGeom = dSpaceGetGeom(space, i);
 
                 if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
+                {
                     continue;
+                }
                 numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
                                 &(contact[0].geom), sizeof(dContact));
                 if(numc)
                 {
                     if (contact[0].geom.depth < depth)
+                    {
                         depth = contact[0].geom.depth;
+                    }
                 }
             }
 
@@ -711,7 +728,7 @@ namespace mars
             //             }
             //         }
 
-            //         // todo: return contact position
+            //         // TODO: return contact position
             //         contactPos.x() = contact[i].geom.pos[0];
             //         contactPos.y() = contact[i].geom.pos[1];
             //         contactPos.z() = contact[i].geom.pos[2];
@@ -738,10 +755,9 @@ namespace mars
                 LOG_ERROR("%s", errmsg.c_str());
                 throw std::runtime_error(errmsg);
             }
-            // todo: what do we need here
+            // TODO: what do we need here
 
-            Object *newObject;
-            newObject = ObjectFactory::Instance().createObject(type, this, movable, config);
+            auto* const newObject = ObjectFactory::Instance().createObject(type, this, movable, config);
             objects[config["name"].getString()] = newObject;
             // if(movable)
             {
@@ -756,10 +772,10 @@ namespace mars
                     bool show = true;
                     if(control->cfg)
                     {
-                        show = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
-                                                                (int)1).iValue & 2;
+                        // TODO: Remove magic number
+                        show = control->cfg->getOrCreateProperty("Simulator", "visual rep.", 1).iValue & 2;
                     }
-                    configmaps::ConfigMap map = config;
+                    auto map = configmaps::ConfigMap{config};
                     map["physicmode"] = config["type"];
 
                     // map["movable"] = true;
@@ -828,7 +844,7 @@ namespace mars
         {
             if(control->graphics)
             {
-                for(auto &object : dynamicObjects)
+                for(const auto &object : dynamicObjects)
                 {
                     control->graphics->setDrawObjectShow(object->drawID, show);
                 }
@@ -842,7 +858,7 @@ namespace mars
 
         void CollisionSpace::getContacts(std::vector<ContactData> &contactVector)
         {
-            for(auto &it : this->contactVector)
+            for(const auto &it : this->contactVector)
             {
                 contactVector.push_back(it);
             }
@@ -850,17 +866,17 @@ namespace mars
 
         void CollisionSpace::getContacts(std::shared_ptr<CollisionInterface> other, std::vector<ContactData> &contactVector)
         {
-            MutexLocker locker(&iMutex);
+            const MutexLocker locker{&iMutex};
 
             if(space_init > 0)
             {
-                CollisionSpace *otherSpace = dynamic_cast<CollisionSpace*>(other.get());
+                auto* const otherSpace = dynamic_cast<CollisionSpace*>(other.get());
                 if(otherSpace)
                 {
                     num_contacts = log_contacts = 0;
                     this->contactVector.clear();
                     dSpaceCollide2((dxGeom*)space, (dxGeom*)otherSpace->getSpace(), this, &CollisionSpace::callbackForward);
-                    for(auto &it : this->contactVector)
+                    for(const auto &it : this->contactVector)
                     {
                         contactVector.push_back(it);
                     }
