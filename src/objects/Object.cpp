@@ -185,5 +185,27 @@ namespace mars
             LOG_WARN("Set size not implemented for object %s", name.c_str());
         }
 
+        configmaps::ConfigMap Object::getConfigMap() const
+        {
+            configmaps::ConfigMap result;
+
+            result["position (local)"] = utils::vectorToConfigItem(pos);
+            result["rotation (local)"] = utils::quaternionToConfigItem(q);
+            result["filter depth"] = filter_depth;
+            result["filter angle"] = filter_angle;
+            result["filter radius"] = filter_radius;
+            result["filter sphere"] = utils::vectorToConfigItem(filter_sphere);
+
+            return result;
+        }
+
+        std::vector<std::string> Object::getEditPattern(const std::string& basePath) const
+        {
+            return std::vector<std::string>{""};
+        }
+
+        void Object::edit(const std::string& configPath, const std::string& value)
+        {}
+
     } // end of namespace ode_collision
 } // end of namespace mars

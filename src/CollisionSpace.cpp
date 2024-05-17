@@ -893,14 +893,14 @@ namespace mars
         {
             configmaps::ConfigMap result;
 
-            configmaps::ConfigVector objectsConfigVector;
+            configmaps::ConfigMap objectsConfigMap;
             for(const auto& object : objects)
             {
                 configmaps::ConfigItem objectItem;
                 objectItem = object.first;
-                objectsConfigVector.push_back(objectItem);
+                objectsConfigMap[object.first] = object.second->getConfigMap();
             }
-            result["objects"] = objectsConfigVector;
+            result["objects"] = objectsConfigMap;
 
             return result;
         }

@@ -9,6 +9,7 @@
 #pragma once
 #include "../CollisionSpace.hpp"
 #include <mars_interfaces/contact_params.h>
+#include <mars_interfaces/ConfigMapInterface.hpp>
 #include <mars_interfaces/sim/DynamicObject.hpp>
 
 
@@ -25,7 +26,7 @@ namespace mars
     namespace ode_collision
     {
 
-        class Object
+        class Object : public interfaces::ConfigMapInterface
         {
         public:
             Object(interfaces::CollisionInterface *space, std::shared_ptr<interfaces::DynamicObject> movable);
@@ -54,9 +55,13 @@ namespace mars
             unsigned long drawID;
             interfaces::GraphicsManagerInterface *graphics;
 
+            // --- mars::interfaces::ConfigMapInterface ---
+            virtual configmaps::ConfigMap getConfigMap() const override;
+            virtual std::vector<std::string> getEditPattern(const std::string& basePath) const override;
+            virtual void edit(const std::string& configPath, const std::string& value) override;
+
         protected:
             // transform is always relative to frame transformation
-            // todo: do to this interlibrary connections we should switch to shared pointer
             std::shared_ptr<interfaces::DynamicObject> movable;
             utils::Vector pos;
             utils::Quaternion q;
