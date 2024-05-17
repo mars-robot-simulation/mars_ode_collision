@@ -189,12 +189,17 @@ namespace mars
         {
             configmaps::ConfigMap result;
 
+            result["static"] = movable == nullptr;
             result["position (local)"] = utils::vectorToConfigItem(pos);
             result["rotation (local)"] = utils::quaternionToConfigItem(q);
-            result["filter depth"] = filter_depth;
-            result["filter angle"] = filter_angle;
-            result["filter radius"] = filter_radius;
-            result["filter sphere"] = utils::vectorToConfigItem(filter_sphere);
+            {
+                configmaps::ConfigMap filterMap;
+                filterMap["depth"] = filter_depth;
+                filterMap["angle"] = filter_angle;
+                filterMap["radius"] = filter_radius;
+                filterMap["sphere"] = utils::vectorToConfigItem(filter_sphere);
+                result["filter"] = filterMap;
+            }
 
             return result;
         }
