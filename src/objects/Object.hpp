@@ -34,7 +34,7 @@ namespace mars
 
             void getPosition(utils::Vector *pos) const;
             void setPosition(const utils::Vector &pos);
-            void getRotation(utils::Quaternion *q) const;
+            virtual void getRotation(utils::Quaternion *q) const;
             void setRotation(const utils::Quaternion &q);
 
             virtual void setSize(const utils::Vector &size);

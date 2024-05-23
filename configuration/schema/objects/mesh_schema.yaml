@@ -25,9 +25,3 @@ extend:
         minimum: 0.01
 movable:
   type: boolean
-position:
-    type: object
-    properties:
-      z:
-        type: number
-        minimum: 0.01

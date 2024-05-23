@@ -24,6 +24,8 @@ namespace mars
             dReal heightCallback(int x, int y);
             void setTerrainStrcut(interfaces::terrainStruct *t);
             virtual void updateTransform(void) override;
+            //override due to orientation offset
+            void getRotation(utils::Quaternion *q) const;
 
         protected:
             configmaps::ConfigMap config;

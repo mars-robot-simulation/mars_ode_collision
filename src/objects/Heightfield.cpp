@@ -92,8 +92,15 @@ namespace mars
             // currently heightmaps are always static
             dGeomSetPosition(nGeom, (dReal)pos.x(),
                              (dReal)pos.y(), (dReal)pos.z());
+            // todo: handle orientation
         }
 
+
+        void Heightfield::getRotation(utils::Quaternion *q) const
+        {
+            q->w() = 1.0;
+            q->x() = q->y() = q->z() = 0.0;
+        }
 
     } // end of namespace ode_collision
 } // end of namespace mars
