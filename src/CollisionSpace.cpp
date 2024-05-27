@@ -900,7 +900,8 @@ namespace mars
                 objectItem = object.first;
                 objectsConfigMap[object.first] = object.second->getConfigMap();
             }
-            result["objects"] = objectsConfigMap;
+            const auto objectsKey = std::string{"objects ("} + std::to_string(objects.size()) + ")";
+            result[objectsKey] = objectsConfigMap;
 
             return result;
         }
