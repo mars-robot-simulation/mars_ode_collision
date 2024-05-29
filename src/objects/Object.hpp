@@ -51,7 +51,7 @@ namespace mars
             interfaces::contact_params c_params;
             double filter_depth, filter_angle, filter_radius;
             utils::Vector filter_sphere;
-            // todo: find a clean solution for debug drawings
+            // TODO: find a clean solution for debug drawings
             unsigned long drawID;
             interfaces::GraphicsManagerInterface *graphics;
 
@@ -62,7 +62,8 @@ namespace mars
 
         protected:
             // transform is always relative to frame transformation
-            std::shared_ptr<interfaces::DynamicObject> movable;
+            bool movable;
+            std::weak_ptr<interfaces::DynamicObject> dynamicObject;
             utils::Vector pos;
             utils::Quaternion q;
             bool objectCreated;

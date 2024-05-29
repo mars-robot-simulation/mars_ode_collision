@@ -32,16 +32,17 @@ namespace mars
          *     - the class should have saved the pointer to the physics implementation
          *     - the body and geom should be initialized to 0
          */
-        Object::Object(CollisionInterface *space, std::shared_ptr<DynamicObject> movable) : movable(movable), objectCreated(false),
-                                                                                            pos(0.0, 0.0, 0.0),
-                                                                                            q(1.0, 0.0, 0.0, 0.0),
-                                                                                            filter_depth(-1.0),
-                                                                                            filter_angle(-1.0),
-                                                                                            filter_radius(-1.0),
-                                                                                            filter_sphere(0.0, 0.0, 0.0)
+        Object::Object(CollisionInterface *space, std::shared_ptr<DynamicObject> movable) : movable{movable}, dynamicObject{movable},
+                                                                                            objectCreated{false},
+                                                                                            pos{0.0, 0.0, 0.0},
+                                                                                            q{1.0, 0.0, 0.0, 0.0},
+                                                                                            filter_depth{-1.0},
+                                                                                            filter_angle{-1.0},
+                                                                                            filter_radius{-1.0},
+                                                                                            filter_sphere{0.0, 0.0, 0.0}
         {
             this->space = dynamic_cast<CollisionSpace*>(space);
-            graphics = NULL;
+            graphics = nullptr;
         }
 
         /**
@@ -60,12 +61,12 @@ namespace mars
             //std::vector<sensor_list_element>::iterator iter;
             //MutexLocker locker(&(theWorld->iMutex));
 
-            // todo: remove object from frame?
+            // TODO: remove object from frame?
         }
 
         void Object::getPosition(Vector* pos) const
         {
-            // todo: position is defined by frame position
+            // TODO: position is defined by frame position
             // local position and rotation should store offsets
             //MutexLocker locker(&(theWorld->iMutex));
             const dReal *dPos = dGeomGetPosition(nGeom);
@@ -94,7 +95,7 @@ namespace mars
          */
         void Object::setPosition(const Vector &pos)
         {
-            // todo: update the position of the frame or center of mass of this object in the frame
+            // TODO: update the position of the frame or center of mass of this object in the frame
             this->pos = pos;
         }
 
@@ -113,10 +114,10 @@ namespace mars
          *       of the node
          *     - otherwise a standard return of zero rotation should be set
          */
-        // todo: add getAbsoluteRotation ...
+        // TODO: add getAbsoluteRotation ...
         void Object::getRotation(Quaternion* q) const
         {
-            // todo: see above
+            // TODO: see above
             dQuaternion dQ;
             dGeomGetQuaternion(nGeom, dQ);
             q->w() = dQ[0];
@@ -134,25 +135,25 @@ namespace mars
          */
         void Object::setRotation(const Quaternion &q)
         {
-            // todo
+            // TODO
             this->q = q;
         }
 
-        // todo: change name to updateAbsTransform
+        // TODO: change name to updateAbsTransform
         void Object::updateTransform(void)
         {
             // local transform is relative to parent frame
             //fprintf(stderr, "update collision of ");
-            if(movable)
+            if(auto dynamicObjectShared = dynamicObject.lock())
             {
                 //fprintf(stderr, "  %s\n", movable->getName().c_str());
                 Vector framePos;
                 Quaternion frameQ;
-                movable->getPosition(&framePos);
-                movable->getRotation(&frameQ);
+                dynamicObjectShared->getPosition(&framePos);
+                dynamicObjectShared->getRotation(&frameQ);
 
                 framePos += frameQ*pos;
-                // todo: dGeom set position
+                // TODO: dGeom set position
                 dGeomSetPosition(nGeom, (dReal)framePos.x(),
                                  (dReal)framePos.y(), (dReal)framePos.z());
                 //fprintf(stderr, " %g %g %g - ", framePos.x(), framePos.y(), framePos.z());
@@ -160,7 +161,8 @@ namespace mars
                 dQuaternion dQ = {frameQ.w(), frameQ.x(), frameQ.y(), frameQ.z()};
                 dGeomSetQuaternion(nGeom, dQ);
                 //fprintf(stderr, " %g %g %g %g\n", frameQ.w(), frameQ.x(), frameQ.y(), frameQ.z());
-            } else
+            }
+            else
             {
                 //fprintf(stderr, "static\n");
                 dGeomSetPosition(nGeom, (dReal)pos.x(),
@@ -172,7 +174,7 @@ namespace mars
 
         std::shared_ptr<DynamicObject> Object::getMovable() const
         {
-            return movable;
+            return dynamicObject.lock();
         }
 
         const std::string& Object::getName() const
@@ -189,7 +191,7 @@ namespace mars
         {
             configmaps::ConfigMap result;
 
-            result["static"] = movable == nullptr;
+            result["static"] = !movable;
             result["position (local)"] = utils::vectorToConfigItem(pos);
             result["rotation (local)"] = utils::quaternionToConfigItem(q);
             {
