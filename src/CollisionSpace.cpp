@@ -529,6 +529,8 @@ namespace mars
                         cd.normal.z() = contact[i].geom.normal[2];
                         cd.body1 = object1->getMovable();
                         cd.body2 = object2->getMovable();
+                        cd.contactMaterialObject1 = object1->getMaterialAt(cd.pos);
+                        cd.contactMaterialObject2 = object2->getMaterialAt(cd.pos);
                         contactVector.push_back(cd);
                         // fprintf(stderr, "\t\tfound contact\n");
                         //  if(object1->getMovable())
