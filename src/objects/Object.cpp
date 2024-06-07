@@ -172,6 +172,12 @@ namespace mars
             }
         }
 
+        interfaces::ContactMaterial Object::getMaterialAt(const utils::Vector& pos) const
+        {
+            return interfaces::ContactMaterial::kUnknown;
+        }
+
+
         std::shared_ptr<DynamicObject> Object::getMovable() const
         {
             return dynamicObject.lock();

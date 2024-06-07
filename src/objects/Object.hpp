@@ -40,6 +40,7 @@ namespace mars
             virtual void setSize(const utils::Vector &size);
             virtual bool createGeom() = 0;
             virtual void updateTransform(void);
+            virtual interfaces::ContactMaterial getMaterialAt(const utils::Vector& pos) const;
 
             bool isObjectCreated()
             {
