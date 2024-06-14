@@ -10,18 +10,18 @@ origname:
     type: string
 filename:
     type: string
-extend:
-    type: object
-    required: true
-    properties:
-      x:
-        type: number
-        minimum: 0.01
-      y:
-        type: number
-        minimum: 0.01
-      z:
-        type: number
-        minimum: 0.01
+# extend:
+#     type: object
+#     required: true
+#     properties:
+#       x:
+#         type: number
+#         minimum: 0.01
+#       y:
+#         type: number
+#         minimum: 0.01
+#       z:
+#         type: number
+#         minimum: 0.01
 movable:
   type: boolean
