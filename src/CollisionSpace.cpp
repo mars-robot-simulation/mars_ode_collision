@@ -853,6 +853,11 @@ namespace mars
             }
         }
 
+        void CollisionSpace::reset()
+        {
+            contactVector.clear();
+        }
+
         void CollisionSpace::swapContacts(std::vector<ContactData> &contactVector)
         {
             this->contactVector.swap(contactVector);

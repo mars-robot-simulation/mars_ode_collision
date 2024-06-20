@@ -53,6 +53,7 @@ namespace mars
             virtual ode_collision::Object* createObject(configmaps::ConfigMap &config, std::shared_ptr<interfaces::DynamicObject> movable=nullptr) override;
             virtual void updateTransforms(void) override;
             virtual void showDebugObjects(bool show) override;
+            virtual void reset() override;
 
             // --- mars::interfaces::ConfigMapInterface ---
             virtual configmaps::ConfigMap getConfigMap() const override;
