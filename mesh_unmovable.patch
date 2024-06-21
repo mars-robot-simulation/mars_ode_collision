@@ -1,0 +1,25 @@
+diff --git a/src/CollisionSpace.cpp b/src/CollisionSpace.cpp
+index 71e08dd..7862dc3 100644
+--- a/src/CollisionSpace.cpp
++++ b/src/CollisionSpace.cpp
+@@ -17,6 +17,8 @@
+ 
+ #include <configmaps/ConfigSchema.hpp>
+ 
++#include "objects/Mesh.hpp"
++
+ #define EPSILON 1e-10
+ 
+ 
+@@ -821,6 +823,11 @@ namespace mars
+             }
+             for(auto &object : dynamicObjects)
+             {
++                if (dynamic_cast<Mesh*>(object))
++                {
++                    continue;
++                }
++
+                 object->updateTransform();
+                 if(control->graphics)
+                 {

@@ -15,6 +15,7 @@ namespace mars
             myIndices = NULL;
             myTriMeshData = 0;
             vertexcount = 0;
+            fprintf(stderr, "ode_collision: Mesh constructor.\n");
         }
 
         Mesh::~Mesh(void)
