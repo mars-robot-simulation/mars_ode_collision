@@ -112,6 +112,8 @@ namespace mars
          */
         void CollisionSpace::freeSpace(void)
         {
+            reset();
+
             MutexLocker locker(&iMutex);
             if(space_init)
             {
@@ -861,10 +863,6 @@ namespace mars
         {
             contactVector.clear();
             dynamicObjects.clear();
-            for (auto& namedObjects: objects)
-            {
-                delete namedObjects.second;
-            }
             objects.clear();
         }
 

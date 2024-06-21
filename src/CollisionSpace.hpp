@@ -76,8 +76,9 @@ namespace mars
             bool space_init;
             std::vector<interfaces::ContactData> contactVector;
             interfaces::ControlCenter *control;
-            std::map<std::string, Object*> objects;
             std::map<std::string, configmaps::ConfigSchema> objects_schema;
+            // NOTE: The Object* are deleted by removing the shared_ptr<Object> from the envireGraph in core::CollisionManager::clear.
+            std::map<std::string, Object*> objects;
             std::vector<Object*> dynamicObjects;
 
             bool create_contacts, log_contacts;
