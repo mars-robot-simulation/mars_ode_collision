@@ -67,6 +67,10 @@ namespace mars
         CollisionSpace::~CollisionSpace(void)
         {
             MutexLocker locker(&iMutex);
+            for(auto namedObject : objects)
+            {
+                delete namedObject.second;
+            }
             dCloseODE();
         }
 
@@ -108,6 +112,8 @@ namespace mars
          */
         void CollisionSpace::freeSpace(void)
         {
+            reset();
+
             MutexLocker locker(&iMutex);
             if(space_init)
             {
@@ -851,6 +857,13 @@ namespace mars
                     control->graphics->setDrawObjectShow(object->drawID, show);
                 }
             }
+        }
+
+        void CollisionSpace::reset()
+        {
+            contactVector.clear();
+            dynamicObjects.clear();
+            objects.clear();
         }
 
         void CollisionSpace::swapContacts(std::vector<ContactData> &contactVector)

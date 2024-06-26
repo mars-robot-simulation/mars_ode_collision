@@ -61,6 +61,10 @@ namespace mars
             //std::vector<sensor_list_element>::iterator iter;
             //MutexLocker locker(&(theWorld->iMutex));
 
+            if (nGeom)
+            {
+                dGeomDestroy(nGeom);
+            }
             // TODO: remove object from frame?
         }
 
