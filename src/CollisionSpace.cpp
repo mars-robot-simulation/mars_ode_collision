@@ -807,9 +807,11 @@ namespace mars
                     material["shininess"] = 0.;
                     material["transparency"] = 0.3;
                     node.material.fromConfigMap(&material, "");
+                    node.name += "_collision";
                     newObject->drawID = control->graphics->addDrawObject(node, show);
                     newObject->graphics = control->graphics;
-                } else
+                }
+                else
                 {
                     // This is needed, since we moved the graphics to envire_mars_graphics
                     // for the object types except mesh
