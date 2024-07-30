@@ -9,12 +9,15 @@ namespace mars
         using namespace interfaces;
         using namespace configmaps;
 
-        Mesh::Mesh(interfaces::CollisionInterface *space,std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap &config) : Object(space, movable), config(config)
+        Mesh::Mesh(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap& config) : 
+            Object(space, movable),
+            config{config},
+            myVertices{nullptr},
+            myIndices{nullptr},
+            myTriMeshData{nullptr},
+            vertexcount{0},
+            indexcount{0}
         {
-            myVertices = NULL;
-            myIndices = NULL;
-            myTriMeshData = 0;
-            vertexcount = 0;
             fprintf(stderr, "ode_collision: Mesh constructor.\n");
         }
 
@@ -34,10 +37,9 @@ namespace mars
             }
         }
 
-        Object *Mesh::instantiate(interfaces::CollisionInterface *space, std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap &config)
+        Object* Mesh::instantiate(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap& config)
         {
-            Mesh *m = new Mesh(space, movable, config);
-            return m;
+            return new Mesh{space, movable, config};
         }
 
         void Mesh::setMeshData(snmesh &mesh)
@@ -51,14 +53,14 @@ namespace mars
             // of double to float conversion
             for(unsigned long i=0; i<vertexcount; i++)
             {
-                myVertices[i][0] = (dReal)mesh.vertices[i][0];
-                myVertices[i][1] = (dReal)mesh.vertices[i][1];
-                myVertices[i][2] = (dReal)mesh.vertices[i][2];
+                myVertices[i][0] = static_cast<dReal>(mesh.vertices[i][0]);
+                myVertices[i][1] = static_cast<dReal>(mesh.vertices[i][1]);
+                myVertices[i][2] = static_cast<dReal>(mesh.vertices[i][2]);
             }
 
             for(unsigned long i=0; i<indexcount; i++)
             {
-                myIndices[i] = (dTriIndex)mesh.indices[i];
+                myIndices[i] = static_cast<dTriIndex>(mesh.indices[i]);
             }
         }
 
@@ -91,9 +93,9 @@ namespace mars
                 }
             }
             // rescale
-            dReal sx = ((double)config["extend"]["x"])/(maxx-minx);
-            dReal sy = ((double)config["extend"]["y"])/(maxy-miny);
-            dReal sz = ((double)config["extend"]["z"])/(maxz-minz);
+            dReal sx = static_cast<double>(config["extend"]["x"])/(maxx-minx);
+            dReal sy = static_cast<double>(config["extend"]["y"])/(maxy-miny);
+            dReal sz = static_cast<double>(config["extend"]["z"])/(maxz-minz);
             for(unsigned long i=0; i<vertexcount; i++)
             {
                 myVertices[i][0] *= sx;
@@ -102,7 +104,7 @@ namespace mars
             }
 
             // TODO :what to do here. how can we calculate this??
-            dGeomTriMeshDataBuildSimple(myTriMeshData,(dReal*)myVertices,vertexcount, myIndices, indexcount) ;
+            dGeomTriMeshDataBuildSimple(myTriMeshData, reinterpret_cast<dReal*>(myVertices), vertexcount, myIndices, indexcount) ;
 
             nGeom = dCreateTriMesh(space->getSpace(), myTriMeshData, 0, 0, 0);
             // we could need this in the collision callback
@@ -113,9 +115,9 @@ namespace mars
 
         void Mesh::setSize(const utils::Vector &size)
         {
-            dReal sx = ((double)config["extend"]["x"]);
-            dReal sy = ((double)config["extend"]["y"]);
-            dReal sz = ((double)config["extend"]["z"]);
+            dReal sx = static_cast<double>(config["extend"]["x"]);
+            dReal sy = static_cast<double>(config["extend"]["y"]);
+            dReal sz = static_cast<double>(config["extend"]["z"]);
             //LOG_ERROR("%s (%lu): %g %g %g", name.c_str(), drawID, size.x(), size.y(), size.z());
             sx = size.x()/sx;
             sy = size.y()/sy;
@@ -127,7 +129,7 @@ namespace mars
                 myVertices[i][1] *= sy;
                 myVertices[i][2] *= sz;
             }
-            dGeomTriMeshDataBuildSimple(myTriMeshData,(dReal*)myVertices,vertexcount, myIndices, indexcount) ;
+            dGeomTriMeshDataBuildSimple(myTriMeshData, reinterpret_cast<dReal*>(myVertices), vertexcount, myIndices, indexcount) ;
             if(graphics)
             {
                 graphics->lock();

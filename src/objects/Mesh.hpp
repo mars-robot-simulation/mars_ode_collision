@@ -16,18 +16,19 @@ namespace mars
         class Mesh : public Object
         {
         public:
-            Mesh(interfaces::CollisionInterface* space,std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap &config);
+            Mesh(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap& config);
             virtual ~Mesh(void);
-            static Object* instantiate(interfaces::CollisionInterface* space,std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap &config);
-            void setMeshData(interfaces::snmesh &mesh);
+            static Object* instantiate(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap& config);
+            void setMeshData(interfaces::snmesh& mesh);
             virtual bool createGeom() override;
-            virtual void setSize(const utils::Vector &size);
+            virtual void setSize(const utils::Vector& size);
 
         protected:
             configmaps::ConfigMap config;
-            unsigned long vertexcount, indexcount;
-            dVector3 *myVertices;
-            dTriIndex *myIndices;
+            unsigned long vertexcount;
+            unsigned long indexcount;
+            dVector3* myVertices;
+            dTriIndex* myIndices;
             dTriMeshDataID myTriMeshData;
         };
 
