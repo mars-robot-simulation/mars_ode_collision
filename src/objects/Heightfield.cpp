@@ -28,6 +28,7 @@ namespace mars
                 if(terrain->pixelData)
                 {
                     free(terrain->pixelData);
+                    terrain->pixelData = nullptr;
                 }
                 free(terrain);
             }
