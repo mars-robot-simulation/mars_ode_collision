@@ -17,8 +17,18 @@ namespace mars
 
         Heightfield::~Heightfield(void)
         {
-            if(height_data) free(height_data);
-            if(terrain) free (terrain);
+            if(height_data)
+            {
+                free(height_data);
+            }
+            if(terrain)
+            {
+                if(terrain->pixelData)
+                {
+                    free(terrain->pixelData);
+                }
+                free(terrain);
+            }
         }
 
         Object* Heightfield::instantiate(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config)
