@@ -22,7 +22,7 @@ namespace mars
             static Object* instantiate(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap& config);
             virtual bool createGeom() override;
             dReal heightCallback(int x, int y);
-            void setTerrainStrcut(interfaces::terrainStruct* t);
+            void setTerrainStruct(interfaces::terrainStruct* t);
             virtual void updateTransform(void) override;
             //override due to orientation offset
             void getRotation(utils::Quaternion* q) const;

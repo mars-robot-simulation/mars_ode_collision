@@ -48,7 +48,7 @@ namespace mars
             return static_cast<dReal>(height_data[(y*terrain->width)+x]*terrain->scale);
         }
 
-        void Heightfield::setTerrainStrcut(interfaces::terrainStruct* t)
+        void Heightfield::setTerrainStruct(interfaces::terrainStruct* t)
         {
             terrain = t;
         }
