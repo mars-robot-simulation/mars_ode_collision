@@ -10,10 +10,12 @@ namespace mars
         using namespace interfaces;
         using namespace configmaps;
 
-        Heightfield::Heightfield(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable), config(config)
-        {
-            height_data = 0;
-        }
+        Heightfield::Heightfield(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap& config) : 
+            Object(space, movable), 
+            config(config),
+            height_data{nullptr},
+            terrain{nullptr}
+        {}
 
         Heightfield::~Heightfield(void)
         {
@@ -31,23 +33,22 @@ namespace mars
             }
         }
 
-        Object* Heightfield::instantiate(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config)
+        Object* Heightfield::instantiate(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap& config)
         {
-            Heightfield *h = new Heightfield(space, movable, config);
-            return h;
+            return static_cast<Object*>(new Heightfield{space, movable, config});
         }
 
-        dReal heightfield_callback(void* pUserData, int x, int z )
+        dReal heightfield_callback(void* pUserData, int x, int z)
         {
-            return ((Heightfield*)pUserData)->heightCallback(x, z);
+            return static_cast<Heightfield*>(pUserData)->heightCallback(x, z);
         }
 
         dReal Heightfield::heightCallback(int x, int y)
         {
-            return (dReal)height_data[(y*terrain->width)+x]*terrain->scale;
+            return static_cast<dReal>(height_data[(y*terrain->width)+x]*terrain->scale);
         }
 
-        void Heightfield::setTerrainStrcut(interfaces::terrainStruct *t)
+        void Heightfield::setTerrainStrcut(interfaces::terrainStruct* t)
         {
             terrain = t;
         }
@@ -58,16 +59,19 @@ namespace mars
             unsigned long size;
             int x, y;
             size = terrain->width*terrain->height;
-            if(!height_data) height_data = (dReal*)calloc(size, sizeof(dReal));
+            if(!height_data)
+            {
+                height_data = (dReal*)calloc(size, sizeof(dReal));
+            }
             for(x=0; x<terrain->height; x++)
             {
                 for(y=0; y<terrain->width; y++)
                 {
-                    height_data[(terrain->height-(x+1))*terrain->width+y] = (dReal)terrain->pixelData[x*terrain->width+y];
+                    height_data[(terrain->height-(x+1))*terrain->width+y] = static_cast<dReal>(terrain->pixelData[x*terrain->width+y]);
                 }
             }
             // build the ode representation
-            dHeightfieldDataID heightid = dGeomHeightfieldDataCreate();
+            const auto heightid = dGeomHeightfieldDataCreate();
 
             // Create an finite heightfield.
             dGeomHeightfieldDataBuildCallback(heightid, this, heightfield_callback,
@@ -100,16 +104,17 @@ namespace mars
             // local transform is relative to parent frame
             //fprintf(stderr, "update collision of ");
             // currently heightmaps are always static
-            dGeomSetPosition(nGeom, (dReal)pos.x(),
-                             (dReal)pos.y(), (dReal)pos.z());
+            dGeomSetPosition(nGeom, static_cast<dReal>(pos.x()),
+                             static_cast<dReal>(pos.y()), static_cast<dReal>(pos.z()));
             // todo: handle orientation
         }
 
 
-        void Heightfield::getRotation(utils::Quaternion *q) const
+        void Heightfield::getRotation(utils::Quaternion* q) const
         {
-            q->w() = 1.0;
-            q->x() = q->y() = q->z() = 0.0;
+            *q = Quaternion::Identity();
+            // q->w() = 1.0;
+            // q->x() = q->y() = q->z() = 0.0;
         }
 
     } // end of namespace ode_collision

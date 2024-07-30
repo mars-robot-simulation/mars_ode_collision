@@ -17,20 +17,20 @@ namespace mars
         class Heightfield : public Object
         {
         public:
-            Heightfield(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap &config);
+            Heightfield(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap& config);
             virtual ~Heightfield(void);
-            static Object* instantiate(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap &config);
+            static Object* instantiate(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap& config);
             virtual bool createGeom() override;
             dReal heightCallback(int x, int y);
-            void setTerrainStrcut(interfaces::terrainStruct *t);
+            void setTerrainStrcut(interfaces::terrainStruct* t);
             virtual void updateTransform(void) override;
             //override due to orientation offset
-            void getRotation(utils::Quaternion *q) const;
+            void getRotation(utils::Quaternion* q) const;
 
         protected:
             configmaps::ConfigMap config;
-            interfaces::terrainStruct *terrain;
-            dReal *height_data;
+            interfaces::terrainStruct* terrain;
+            dReal* height_data;
       
         };
 
