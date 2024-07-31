@@ -67,7 +67,7 @@ namespace mars
         CollisionSpace::~CollisionSpace(void)
         {
             MutexLocker locker(&iMutex);
-            for(auto namedObject : objects)
+            for(auto& namedObject : objects)
             {
                 delete namedObject.second;
             }
@@ -766,7 +766,14 @@ namespace mars
             // TODO: what do we need here
 
             auto* const newObject = ObjectFactory::Instance().createObject(type, this, movable, config);
-            objects[config["name"].getString()] = newObject;
+            const auto& objectName = config["name"].toString();
+            if (objects.count(objectName) > 0)
+            {
+                const auto msg = std::string{"CollisionSpace::createObject: Replacing object named \""} + objectName + "\".";
+                LOG_WARN("%s", msg.c_str());
+                delete objects[objectName];
+            }
+            objects[objectName] = newObject;
             // if(movable)
             {
                 dynamicObjects.push_back(newObject);
