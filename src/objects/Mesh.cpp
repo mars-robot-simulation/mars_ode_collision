@@ -23,17 +23,27 @@ namespace mars
 
         Mesh::~Mesh(void)
         {
+            freeMemory();
+        }
+
+        void Mesh::freeMemory()
+        {
             if(myVertices)
             {
                 free(myVertices);
+                myVertices = nullptr;
+                vertexcount = 0;
             }
             if(myIndices)
             {
                 free(myIndices);
+                myIndices = nullptr;
+                indexcount = 0;
             }
             if(myTriMeshData)
             {
                 dGeomTriMeshDataDestroy(myTriMeshData);
+                myTriMeshData = nullptr;
             }
         }
 
@@ -46,6 +56,9 @@ namespace mars
         {
             vertexcount = mesh.vertexcount;
             indexcount = mesh.indexcount;
+
+            freeMemory();
+
             myVertices = (dVector3*)calloc(vertexcount, sizeof(dVector3));
             myIndices = (dTriIndex*)calloc(indexcount, sizeof(dTriIndex));
 
@@ -67,35 +80,31 @@ namespace mars
         // todo: add proper error handling -> setMeshData have to be called before createGeom is called...
         bool Mesh::createGeom()
         {
+            assert(vertexcount > 0);
+
             name << config["name"];
             // // build the ode representation
             myTriMeshData = dGeomTriMeshDataCreate();
             
-            dReal minx, miny, minz, maxx, maxy, maxz;
+            dReal minx = std::numeric_limits<dReal>::max();
+            dReal miny = std::numeric_limits<dReal>::max();
+            dReal minz = std::numeric_limits<dReal>::max();
+            dReal maxx = std::numeric_limits<dReal>::min();
+            dReal maxy = std::numeric_limits<dReal>::min();
+            dReal maxz = std::numeric_limits<dReal>::min();
             for(unsigned long i=0; i<vertexcount; i++)
             {
-                if(i==0)
-                {
-                    minx = myVertices[i][0];
-                    maxx = myVertices[i][0];
-                    miny = myVertices[i][1];
-                    maxy = myVertices[i][1];
-                    minz = myVertices[i][2];
-                    maxz = myVertices[i][2];
-                } else
-                {
-                    if(minx > myVertices[i][0]) minx = myVertices[i][0];
-                    if(maxx < myVertices[i][0]) maxx = myVertices[i][0];
-                    if(miny > myVertices[i][1]) miny = myVertices[i][1];
-                    if(maxy < myVertices[i][1]) maxy = myVertices[i][1];
-                    if(minz > myVertices[i][2]) minz = myVertices[i][2];
-                    if(maxz < myVertices[i][2]) maxz = myVertices[i][2];
-                }
+                minx = std::min(minx, myVertices[i][0]);
+                miny = std::min(miny, myVertices[i][1]);
+                minz = std::min(minz, myVertices[i][2]);
+                maxx = std::max(maxx, myVertices[i][0]);
+                maxy = std::max(maxy, myVertices[i][1]);
+                maxz = std::max(maxz, myVertices[i][2]);
             }
             // rescale
-            dReal sx = static_cast<double>(config["extend"]["x"])/(maxx-minx);
-            dReal sy = static_cast<double>(config["extend"]["y"])/(maxy-miny);
-            dReal sz = static_cast<double>(config["extend"]["z"])/(maxz-minz);
+            const dReal sx = static_cast<double>(config["extend"]["x"])/(maxx-minx);
+            const dReal sy = static_cast<double>(config["extend"]["y"])/(maxy-miny);
+            const dReal sz = static_cast<double>(config["extend"]["z"])/(maxz-minz);
             for(unsigned long i=0; i<vertexcount; i++)
             {
                 myVertices[i][0] *= sx;
@@ -115,13 +124,10 @@ namespace mars
 
         void Mesh::setSize(const utils::Vector &size)
         {
-            dReal sx = static_cast<double>(config["extend"]["x"]);
-            dReal sy = static_cast<double>(config["extend"]["y"]);
-            dReal sz = static_cast<double>(config["extend"]["z"]);
+            const dReal sx = size.x()/static_cast<double>(config["extend"]["x"]);
+            const dReal sy = size.y()/static_cast<double>(config["extend"]["y"]);
+            const dReal sz = size.z()/static_cast<double>(config["extend"]["z"]);
             //LOG_ERROR("%s (%lu): %g %g %g", name.c_str(), drawID, size.x(), size.y(), size.z());
-            sx = size.x()/sx;
-            sy = size.y()/sy;
-            sz = size.z()/sz;
 
             for(unsigned long i=0; i<vertexcount; i++)
             {
@@ -133,7 +139,7 @@ namespace mars
             if(graphics)
             {
                 graphics->lock();
-                graphics->setDrawObjectScale(drawID, Vector(sx, sy, sz));
+                graphics->setDrawObjectScale(drawID, Vector{sx, sy, sz});
                 graphics->unlock();
             }
             // todo: how to update debug visual

@@ -30,6 +30,9 @@ namespace mars
             dVector3* myVertices;
             dTriIndex* myIndices;
             dTriMeshDataID myTriMeshData;
+        
+        private:
+            void freeMemory();
         };
 
     } // end of namespace ode_collision
