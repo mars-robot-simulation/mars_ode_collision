@@ -30,7 +30,7 @@ namespace mars
                     free(terrain->pixelData);
                     terrain->pixelData = nullptr;
                 }
-                free(terrain);
+                delete terrain;
             }
         }
 
