@@ -11,8 +11,7 @@ namespace mars
         using namespace configmaps;
 
         Heightfield::Heightfield(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap& config) : 
-            Object(space, movable), 
-            config(config),
+            Object(space, movable, config),
             height_data{nullptr},
             terrain{nullptr}
         {}

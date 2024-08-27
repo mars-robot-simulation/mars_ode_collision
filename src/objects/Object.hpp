@@ -29,7 +29,9 @@ namespace mars
         class Object : public interfaces::ConfigMapInterface
         {
         public:
-            Object(interfaces::CollisionInterface *space, std::shared_ptr<interfaces::DynamicObject> movable);
+            Object(interfaces::CollisionInterface *space,
+                   std::shared_ptr<interfaces::DynamicObject> movable,
+                   configmaps::ConfigMap &config);
             virtual ~Object(void);
 
             void getPosition(utils::Vector *pos) const;
@@ -71,6 +73,7 @@ namespace mars
             dGeomID nGeom;
             CollisionSpace *space;
             std::string name;
+            configmaps::ConfigMap config;
         };
 
     } // end of namespace ode_collision

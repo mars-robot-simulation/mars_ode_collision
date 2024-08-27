@@ -10,8 +10,7 @@ namespace mars
         using namespace configmaps;
 
         Mesh::Mesh(interfaces::CollisionInterface* space, std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap& config) : 
-            Object(space, movable),
-            config{config},
+            Object(space, movable, config),
             myVertices{nullptr},
             myIndices{nullptr},
             myTriMeshData{nullptr},

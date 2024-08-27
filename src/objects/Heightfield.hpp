@@ -28,7 +28,6 @@ namespace mars
             void getRotation(utils::Quaternion* q) const;
 
         protected:
-            configmaps::ConfigMap config;
             interfaces::terrainStruct* terrain;
             dReal* height_data;
       

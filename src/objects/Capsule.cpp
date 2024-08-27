@@ -12,7 +12,7 @@ namespace mars
         using namespace interfaces;
         using namespace configmaps;
 
-        Capsule::Capsule(interfaces::CollisionInterface *space,std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap &config) : Object(space, movable), config(config)
+        Capsule::Capsule(interfaces::CollisionInterface *space,std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
             fprintf(stderr, "ode_collision: Capsule constructor.\n");
         }

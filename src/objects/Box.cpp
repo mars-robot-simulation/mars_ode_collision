@@ -9,7 +9,7 @@ namespace mars
         using namespace interfaces;
         using namespace configmaps;
 
-        Box::Box(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable), config(config)
+        Box::Box(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
             fprintf(stderr, "ode_collision: Box constructor.\n");
         }

@@ -24,7 +24,6 @@ namespace mars
             virtual void setSize(const utils::Vector& size);
 
         protected:
-            configmaps::ConfigMap config;
             unsigned long vertexcount;
             unsigned long indexcount;
             dVector3* myVertices;

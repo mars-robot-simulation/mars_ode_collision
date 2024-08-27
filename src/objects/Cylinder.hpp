@@ -21,9 +21,6 @@ namespace mars
             virtual ~Cylinder(void);
             static Object *instantiate(interfaces::CollisionInterface *space,std::shared_ptr<interfaces::DynamicObject> movable, configmaps::ConfigMap &config);
             virtual bool createGeom() override;
-
-        private:
-            configmaps::ConfigMap config;
         };
 
     } // end of namespace ode_collision

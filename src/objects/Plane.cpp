@@ -9,7 +9,7 @@ namespace mars
         using namespace interfaces;
         using namespace configmaps;
 
-        Plane::Plane(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable), config(config)
+        Plane::Plane(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
             fprintf(stderr, "ode_collision: Plane constructor.\n");
         }

@@ -9,6 +9,10 @@
 
 #include <iostream>
 
+// todo: move this to configmap
+#define GET_VALUE(str, val, type)                 \
+    if((it = config.find(str)) != config.end()) \
+        val = it->second;
 
 namespace mars
 {
@@ -32,17 +36,49 @@ namespace mars
          *     - the class should have saved the pointer to the physics implementation
          *     - the body and geom should be initialized to 0
          */
-        Object::Object(CollisionInterface *space, std::shared_ptr<DynamicObject> movable) : movable{movable}, dynamicObject{movable},
-                                                                                            objectCreated{false},
-                                                                                            pos{0.0, 0.0, 0.0},
-                                                                                            q{1.0, 0.0, 0.0, 0.0},
-                                                                                            filter_depth{-1.0},
-                                                                                            filter_angle{-1.0},
-                                                                                            filter_radius{-1.0},
-                                                                                            filter_sphere{0.0, 0.0, 0.0}
+        Object::Object(CollisionInterface *space,
+                       std::shared_ptr<DynamicObject> movable,
+                       configmaps::ConfigMap &config) : movable{movable}, dynamicObject{movable},
+                                                        objectCreated{false},
+                                                        pos{0.0, 0.0, 0.0},
+                                                        q{1.0, 0.0, 0.0, 0.0},
+                                                        filter_depth{-1.0},
+                                                        filter_angle{-1.0},
+                                                        filter_radius{-1.0},
+                                                        filter_sphere{0.0, 0.0, 0.0},
+                                                        config(config)
         {
             this->space = dynamic_cast<CollisionSpace*>(space);
             graphics = nullptr;
+
+            // read c_params from config
+            configmaps::ConfigMap::iterator it;
+            GET_VALUE("cmax_num_contacts", c_params.max_num_contacts, Int);
+            GET_VALUE("cerp", c_params.erp, Double);
+            GET_VALUE("ccfm", c_params.cfm, Double);
+            GET_VALUE("cfriction1", c_params.friction1, Double);
+            GET_VALUE("cfriction2", c_params.friction2, Double);
+            GET_VALUE("cmotion1", c_params.motion1, Double);
+            GET_VALUE("cmotion2", c_params.motion2, Double);
+            GET_VALUE("cfds1", c_params.fds1, Double);
+            GET_VALUE("cfds2", c_params.fds2, Double);
+            GET_VALUE("cbounce", c_params.bounce, Double);
+            GET_VALUE("cbounce_vel", c_params.bounce_vel, Double);
+            GET_VALUE("capprox", c_params.approx_pyramid, Bool);
+            GET_VALUE("coll_bitmask", c_params.coll_bitmask, Int);
+            GET_VALUE("rolling_friction", c_params.rolling_friction, Double);
+            GET_VALUE("rolling_friction2", c_params.rolling_friction2, Double);
+            GET_VALUE("spinning_friction", c_params.spinning_friction, Double);
+
+            if((it = config.find("cfdir1")) != config.end())
+            {
+                if(!c_params.friction_direction1)
+                {
+                    c_params.friction_direction1 = new Vector();
+                }
+                vectorFromConfigItem(it->second, c_params.friction_direction1);
+            }
+
         }
 
         /**

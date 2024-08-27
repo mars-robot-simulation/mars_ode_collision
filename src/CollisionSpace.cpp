@@ -537,6 +537,11 @@ namespace mars
                         cd.body2 = object2->getMovable();
                         cd.contactMaterialObject1 = object1->getMaterialAt(cd.pos);
                         cd.contactMaterialObject2 = object2->getMaterialAt(cd.pos);
+                        // todo: add transfer of all contact parameters
+                        cd.c_params.cfm = contact[i].surface.soft_cfm;
+                        cd.c_params.erp = contact[i].surface.soft_erp;
+                        cd.c_params.friction1 = contact[i].surface.mu;
+                        cd.c_params.friction2 = contact[i].surface.mu2;
                         contactVector.push_back(cd);
                         // fprintf(stderr, "\t\tfound contact\n");
                         //  if(object1->getMovable())
