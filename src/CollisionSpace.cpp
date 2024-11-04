@@ -52,6 +52,7 @@ namespace mars
             create_contacts = 1;
             log_contacts = 0;
             registerSchemaValidators();
+            dInitODE();
         }
 
         /**
@@ -71,7 +72,8 @@ namespace mars
             {
                 delete namedObject.second;
             }
-            dCloseODE();
+            // Todo: Check when and how to use dinit and dclose (per library, per class or per thread?)
+            //dCloseODE();
         }
 
         /**
@@ -89,7 +91,6 @@ namespace mars
         {
             MutexLocker locker(&iMutex);
 
-            dInitODE();
             // if world_init = true debug something
             if(!space_init)
             {
