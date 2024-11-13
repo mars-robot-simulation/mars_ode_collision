@@ -15,7 +15,7 @@ namespace mars
 
         Cylinder::Cylinder(interfaces::CollisionInterface *space,std::shared_ptr<interfaces::DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
-            fprintf(stderr, "ode_collision: Cylinder constructor.\n");
+            LOG_INFO("ode_collision: Cylinder constructor.\n");
         }
 
         Cylinder::~Cylinder(void)

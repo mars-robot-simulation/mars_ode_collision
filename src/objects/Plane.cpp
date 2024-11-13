@@ -11,7 +11,7 @@ namespace mars
 
         Plane::Plane(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
-            fprintf(stderr, "ode_collision: Plane constructor.\n");
+            LOG_INFO("ode_collision: Plane constructor.\n");
         }
 
         Plane::~Plane(void)

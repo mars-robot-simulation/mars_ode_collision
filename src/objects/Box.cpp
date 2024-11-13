@@ -11,7 +11,7 @@ namespace mars
 
         Box::Box(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
-            fprintf(stderr, "ode_collision: Box constructor.\n");
+            LOG_INFO("ode_collision: Box constructor.\n");
         }
 
         Box::~Box(void)

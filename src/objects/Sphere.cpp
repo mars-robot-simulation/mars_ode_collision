@@ -11,7 +11,7 @@ namespace mars
 
         Sphere::Sphere(CollisionInterface* space, std::shared_ptr<DynamicObject> movable, ConfigMap &config) : Object(space, movable, config)
         {
-            fprintf(stderr, "ode_collision: Sphere constructor.\n");
+            LOG_INFO("ode_collision: Sphere constructor.\n");
         }
 
         Sphere::~Sphere(void)

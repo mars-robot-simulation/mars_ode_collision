@@ -17,7 +17,7 @@ namespace mars
             vertexcount{0},
             indexcount{0}
         {
-            fprintf(stderr, "ode_collision: Mesh constructor.\n");
+            LOG_INFO("ode_collision: Mesh constructor.\n");
         }
 
         Mesh::~Mesh(void)
