@@ -543,6 +543,8 @@ namespace mars
                         cd.c_params.erp = contact[i].surface.soft_erp;
                         cd.c_params.friction1 = contact[i].surface.mu;
                         cd.c_params.friction2 = contact[i].surface.mu2;
+                        cd.nameObject1 = object1->getName();
+                        cd.nameObject2 = object2->getName();
                         contactVector.push_back(cd);
                         // fprintf(stderr, "\t\tfound contact\n");
                         //  if(object1->getMovable())
