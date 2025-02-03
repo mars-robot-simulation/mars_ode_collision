@@ -782,87 +782,18 @@ namespace mars
                 delete objects[objectName];
             }
             objects[objectName] = newObject;
-            // if(movable)
+            //if(movable)
             {
                 dynamicObjects.push_back(newObject);
-            }
-            if(control->graphics)
-            {
-                // TODO: we leave mesh graphics here for now
-                // after we get a scene loader, we dont need it anymore
-                if(type == "mesh" || type == "heightfield")
-                {
-                    // bool show = true;
-                    // if(control->cfg)
-                    // {
-                    //     // TODO: Remove magic number
-                    //     show = control->cfg->getOrCreateProperty("Simulator", "visual rep.", 1).iValue & 2;
-                    // }
-                    // auto map = configmaps::ConfigMap{config};
-                    // map["physicmode"] = config["type"];
-
-                    // // map["movable"] = true;
-                    // interfaces::NodeData node;
-                    // node.fromConfigMap(&map, "");
-                    // configmaps::ConfigMap material;
-
-                    // material["name"] = "collision";
-                    // material["diffuseColor"]["a"] = 1.0;
-                    // material["diffuseColor"]["r"] = 0.7;
-                    // material["diffuseColor"]["g"] = 0.39;
-                    // material["diffuseColor"]["b"] = 0.3;
-                    // material["specularColor"]["a"] = 1.0;
-                    // material["specularColor"]["r"] = 0.0;
-                    // material["specularColor"]["g"] = 0.0;
-                    // material["specularColor"]["b"] = 0.0;
-                    // material["ambientColor"]["a"] = 1.0;
-                    // material["ambientColor"]["r"] = 0.7;
-                    // material["ambientColor"]["g"] = 0.59;
-                    // material["ambientColor"]["b"] = 0.5;
-                    // material["shininess"] = 0.;
-                    // material["transparency"] = 0.3;
-                    // node.material.fromConfigMap(&material, "");
-                    // node.name += "_collision";
-                    // newObject->drawID = control->graphics->addDrawObject(node, show);
-                    // newObject->graphics = control->graphics;
-                    newObject->drawID = -1;
-                }
-                else
-                {
-                    // This is needed, since we moved the graphics to envire_mars_graphics
-                    // for the object types except mesh
-                    newObject->drawID = -1;
-                }
             }
             return newObject;
         }
 
         void CollisionSpace::updateTransforms(void)
         {
-            if(control->graphics)
-            {
-                control->graphics->lock();
-            }
             for(auto &object : dynamicObjects)
             {
                 object->updateTransform();
-                if(control->graphics)
-                {
-                    // this is required to use graphics only for mesh for now
-                    if(object->drawID != -1)
-                    {
-                        Vector p;
-                        object->getPosition(&p);
-                        Quaternion q;
-                        object->getRotation(&q);
-                        control->graphics->setDrawObjectPos(object->drawID, p);
-                        control->graphics->setDrawObjectRot(object->drawID, q);
-                    }
-                }
-            }
-            if(control->graphics)
-            {
-                control->graphics->unlock();
             }
         }
 
