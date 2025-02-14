@@ -40,7 +40,7 @@ namespace mars
          *      - world, space, contactgroup and world_init to false (0)
          */
         // TODO: we only need a physics not the control center?
-        CollisionSpace::CollisionSpace(interfaces::ControlCenter *control) : 
+        CollisionSpace::CollisionSpace(interfaces::ControlCenter *control) :
             interfaces::CollisionInterface(), control{control}
         {
             ground_friction = 20;
@@ -659,11 +659,12 @@ namespace mars
             dContact contact[1];
             // double depth = ray.length();
             auto depth = ray.norm();
+            sReal chunkLength = 1.0;
             int numc;
-
-            dGeomID theGeom = dCreateRay(space, static_cast<sReal>(depth));
-            dGeomRaySetClosestHit(theGeom, 1);
-            dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z());
+            int numChunks = floor(depth/chunkLength);
+            sReal lastChunkLength = fmod(depth, chunkLength);
+            dGeomID theGeom;
+            Vector tRay, tPos;
 
             // TODO: first check if there is a collision with the bounding box of the space
             for(int i=0; i<dSpaceGetNumGeoms(space); i++)
@@ -674,18 +675,69 @@ namespace mars
                 {
                     continue;
                 }
-                numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
-                                &(contact[0].geom), sizeof(dContact));
-                if(numc)
+                if(dGeomGetClass(otherGeom) == dHeightfieldClass)
                 {
-                    if (contact[0].geom.depth < depth)
+                    tRay = ray.normalized();
+                    tPos = pos;
+                    bool found = false;
+                    for(int i=0; i<numChunks; ++i)
                     {
-                        depth = contact[0].geom.depth;
+                        theGeom = dCreateRay(space, static_cast<sReal>(chunkLength));
+                        dGeomRaySetClosestHit(theGeom, 1);
+                        dGeomRaySet(theGeom, tPos.x(), tPos.y(), tPos.z(), tRay.x(), tRay.y(), tRay.z());
+
+                        numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+                                        &(contact[0].geom), sizeof(dContact));
+                        if(numc)
+                        {
+                            if (contact[0].geom.depth+i*chunkLength < depth)
+                            {
+                                depth = contact[0].geom.depth+i*chunkLength;
+                            }
+                            found = true;
+                            dGeomDestroy(theGeom);
+                            break;
+                        }
+                        dGeomDestroy(theGeom);
+                        tPos += tRay;
                     }
+                    if(!found)
+                    {
+                        tRay = ray.normalized();
+                        theGeom = dCreateRay(space, static_cast<sReal>(lastChunkLength));
+                        dGeomRaySetClosestHit(theGeom, 1);
+                        dGeomRaySet(theGeom, tPos.x(), tPos.y(), tPos.z(), tRay.x(), tRay.y(), tRay.z());
+
+                        numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+                                        &(contact[0].geom), sizeof(dContact));
+                        if(numc)
+                        {
+                            if (contact[0].geom.depth+numChunks*chunkLength < depth)
+                            {
+                                depth = contact[0].geom.depth+numChunks*chunkLength;
+                            }
+                        }
+                        dGeomDestroy(theGeom);
+                    }
+                } else
+                {
+                    theGeom = dCreateRay(space, static_cast<sReal>(depth));
+                    dGeomRaySetClosestHit(theGeom, 1);
+                    dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z());
+
+                    numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+                                    &(contact[0].geom), sizeof(dContact));
+                    if(numc)
+                    {
+                        if (contact[0].geom.depth < depth)
+                        {
+                            depth = contact[0].geom.depth;
+                        }
+                    }
+                    dGeomDestroy(theGeom);
                 }
             }
 
-            dGeomDestroy(theGeom);
             return depth;
         }
 
@@ -869,7 +921,7 @@ namespace mars
 
             return result;
         }
-        
+
         std::vector<std::string> CollisionSpace::getEditPattern(const std::string& basePath) const
         {
             return std::vector<std::string>{""};
