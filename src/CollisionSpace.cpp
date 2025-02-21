@@ -91,6 +91,7 @@ namespace mars
         {
             MutexLocker locker(&iMutex);
 
+            dRandSetSeed(11211);
             // if world_init = true debug something
             if(!space_init)
             {
