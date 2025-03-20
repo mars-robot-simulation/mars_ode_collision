@@ -672,10 +672,11 @@ namespace mars
             {
                 otherGeom = dSpaceGetGeom(space, i);
 
-                if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
-                {
-                    continue;
-                }
+                // todo: collision bits are not yet defined for rays
+                // if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
+                // {
+                //     continue;
+                // }
                 if(dGeomGetClass(otherGeom) == dHeightfieldClass)
                 {
                     tRay = ray.normalized();
