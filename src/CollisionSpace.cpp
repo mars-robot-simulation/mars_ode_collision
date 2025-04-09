@@ -544,6 +544,9 @@ namespace mars
                         cd.c_params.erp = contact[i].surface.soft_erp;
                         cd.c_params.friction1 = contact[i].surface.mu;
                         cd.c_params.friction2 = contact[i].surface.mu2;
+                        cd.c_params.rolling_friction = contact[i].surface.rho;
+                        cd.c_params.rolling_friction2 = contact[i].surface.rho2;
+                        cd.c_params.spinning_friction = contact[i].surface.rhoN;
                         cd.nameObject1 = object1->getName();
                         cd.nameObject2 = object2->getName();
                         contactVector.push_back(cd);
@@ -688,7 +691,7 @@ namespace mars
                         dGeomRaySetClosestHit(theGeom, 1);
                         dGeomRaySet(theGeom, tPos.x(), tPos.y(), tPos.z(), tRay.x(), tRay.y(), tRay.z());
 
-                        numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+                        numc = dCollide(theGeom, otherGeom, 1,// | CONTACTS_UNIMPORTANT,
                                         &(contact[0].geom), sizeof(dContact));
                         if(numc)
                         {
@@ -710,7 +713,7 @@ namespace mars
                         dGeomRaySetClosestHit(theGeom, 1);
                         dGeomRaySet(theGeom, tPos.x(), tPos.y(), tPos.z(), tRay.x(), tRay.y(), tRay.z());
 
-                        numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+                        numc = dCollide(theGeom, otherGeom, 1,// | CONTACTS_UNIMPORTANT,
                                         &(contact[0].geom), sizeof(dContact));
                         if(numc)
                         {
@@ -727,7 +730,7 @@ namespace mars
                     dGeomRaySetClosestHit(theGeom, 1);
                     dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z());
 
-                    numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+                    numc = dCollide(theGeom, otherGeom, 1,// | CONTACTS_UNIMPORTANT,
                                     &(contact[0].geom), sizeof(dContact));
                     if(numc)
                     {
